@@ -1367,7 +1367,7 @@ def eaf_from_chat(file_path, codec='ascii', extension='wav'):
     last_annotation = None
     with open(file_path, 'r') as chatin:
         while True:
-            line = chatin.readline().strip().decode(codec)
+            line = chatin.readline().strip()
             if line == '@UTF8':  # Codec marker
                 codec = 'utf8'
                 continue
@@ -1382,13 +1382,13 @@ def eaf_from_chat(file_path, codec='ascii', extension='wav'):
                 elif key == '@Participants':
                     for participant in value.split(','):
                         splits = participant.strip().split(' ')
-                        splits = map(lambda x: x.replace('_', ' '), splits)
+                        splits = list(map(lambda x: x.replace('_', ' '), splits))
                         if len(splits) == 2:
                             participantsdb[splits[0]] = (None, splits[1])
                         elif len(splits) == 3:
                             participantsdb[splits[0]] = (splits[1], splits[2])
                 elif key == '@ID':
-                    ids = map(lambda x: x.replace('_', ''), value.split('|'))
+                    ids = list(map(lambda x: x.replace('_', ''), value.split('|')))
                     eafob.add_tier(ids[2], part=participantsdb[ids[2]][0],
                                    language=ids[0])
                 elif key == '@Media':
@@ -1400,12 +1400,12 @@ def eaf_from_chat(file_path, codec='ascii', extension='wav'):
                         eafob.tiers[tier][2]['ANNOTATOR'] = value
             elif line.startswith('*'):  # Main tier marker
                 while len(line.split('\x15')) != 3:
-                    line += chatin.readline().decode(codec).strip()
+                    line += chatin.readline().strip()
                 for participant in participantsdb.keys():
                     if line.startswith('*{}:'.format(participant)):
                         splits = ''.join(line.split(':')[1:]).strip()
                         utt, time, _ = splits.split('\x15')
-                        time = map(int, time.split('_'))
+                        time = list(map(int, time.split('_')))
                         last_annotation = (participant, time[0], time[1], utt)
                         eafob.add_annotation(*last_annotation)
             elif line.startswith('%'):  # Dependant tier marker
