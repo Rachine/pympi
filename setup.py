@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from distutils.core import setup
-
+# from distutils.core import setup
+from setuptools import setup, find_packages
+from setuptools.command.install import install
 licence = 'MIT Licence'
 version = '1.69'
 
