@@ -1400,10 +1400,11 @@ def eaf_from_chat(file_path, codec='ascii', extension='wav'):
                         eafob.tiers[tier][2]['ANNOTATOR'] = value
             elif line.startswith('*'):  # Main tier marker
                 while len(line.split('\x15')) != 3:
+                    line += ' '
                     line += chatin.readline().strip()
                 for participant in participantsdb.keys():
                     if line.startswith('*{}:'.format(participant)):
-                        splits = ''.join(line.split(':')[1:]).strip()
+                        splits = ' '.join(line.split(':')[1:]).strip()
                         utt, time, _ = splits.split('\x15')
                         time = list(map(int, time.split('_')))
                         last_annotation = (participant, time[0], time[1], utt)
@@ -1415,7 +1416,7 @@ def eaf_from_chat(file_path, codec='ascii', extension='wav'):
                     eafob.add_tier(name, 'child', last_annotation[0])
                 eafob.add_ref_annotation(
                     name, last_annotation[0], sum(last_annotation[1:3])/2,
-                    ''.join(splits[1:]).strip())
+                    ' '.join(splits[1:]).strip())
     return eafob
 
 
