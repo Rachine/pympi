@@ -61,15 +61,24 @@ class Eaf:
     """
     ETYPES = {'iso12620', 'ecv', 'cve_id', 'lexen_id', 'resource_url'}
     CONSTRAINTS = {
-        'Time_Subdivision': "Time subdivision of parent annotation's time inte"
+        'Time_Subdivision':
+        "Time subdivision of parent annotation's time inte"
         'rval, no time gaps allowed within this interval',
-        'Symbolic_Subdivision': 'Symbolic subdivision of a parent annotation. '
+        'Symbolic_Subdivision':
+        'Symbolic subdivision of a parent annotation. '
         'Annotations refering to the same parent are ordered',
-        'Symbolic_Association': '1-1 association with a parent annotation',
-        'Included_In': 'Time alignable annotations within the parent annotatio'
-        "n's time interval, gaps are allowed"}
-    MIMES = {'wav': 'audio/x-wav', 'mpg': 'video/mpeg', 'mpeg': 'video/mpg',
-             'xml': 'text/xml'}
+        'Symbolic_Association':
+        '1-1 association with a parent annotation',
+        'Included_In':
+        'Time alignable annotations within the parent annotatio'
+        "n's time interval, gaps are allowed"
+    }
+    MIMES = {
+        'wav': 'audio/x-wav',
+        'mpg': 'video/mpeg',
+        'mpeg': 'video/mpg',
+        'xml': 'text/xml'
+    }
 
     def __init__(self, file_path=None, author='pympi'):
         """Construct either a new Eaf file or read on from a file/stream.
@@ -83,14 +92,20 @@ class Eaf:
         self.maxts = 1
         self.maxaid = 1
         self.adocument = {
-            'AUTHOR': author,
-            'DATE': time.strftime('%Y-%m-%dT%H:%M:%S{:0=+3d}:{:0=2d}').format(
+            'AUTHOR':
+            author,
+            'DATE':
+            time.strftime('%Y-%m-%dT%H:%M:%S{:0=+3d}:{:0=2d}').format(
                 ctz // 3600, ctz % 3600),
-            'VERSION': '2.8',
-            'FORMAT': '2.8',
-            'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+            'VERSION':
+            '2.8',
+            'FORMAT':
+            '2.8',
+            'xmlns:xsi':
+            'http://www.w3.org/2001/XMLSchema-instance',
             'xsi:noNamespaceSchemaLocation':
-                'http://www.mpi.nl/tools/elan/EAFv2.8.xsd'}
+            'http://www.mpi.nl/tools/elan/EAFv2.8.xsd'
+        }
         self.annotations = {}
         self.constraints = {}
         self.controlled_vocabularies = {}
@@ -204,8 +219,15 @@ class Eaf:
         """
         self.languages[lang_id] = (lang_def, lang_label)
 
-    def add_lexicon_ref(self, lrid, name, lrtype, url, lexicon_id,
-                        lexicon_name, datcat_id=None, datcat_name=None):
+    def add_lexicon_ref(self,
+                        lrid,
+                        name,
+                        lrtype,
+                        url,
+                        lexicon_id,
+                        lexicon_name,
+                        datcat_id=None,
+                        datcat_name=None):
         """Add lexicon reference.
 
         :param str lrid: Lexicon reference internal ID.
@@ -226,7 +248,7 @@ class Eaf:
             'LEXICON_NAME': lexicon_name,
             'DATCAT_ID': datcat_id,
             'DATCAT_NAME': datcat_name
-            }
+        }
 
     def add_license(self, name, url):
         """Add a license
@@ -236,9 +258,13 @@ class Eaf:
         """
         self.licenses.append((name, url))
 
-    def add_linguistic_type(self, lingtype, constraints=None,
-                            timealignable=True, graphicreferences=False,
-                            extref=None, param_dict=None):
+    def add_linguistic_type(self,
+                            lingtype,
+                            constraints=None,
+                            timealignable=True,
+                            graphicreferences=False,
+                            extref=None,
+                            param_dict=None):
         """Add a linguistic type.
 
         :param str lingtype: Name of the linguistic type.
@@ -261,12 +287,17 @@ class Eaf:
                 'LINGUISTIC_TYPE_ID': lingtype,
                 'TIME_ALIGNABLE': str(timealignable).lower(),
                 'GRAPHIC_REFERENCES': str(graphicreferences).lower(),
-                'CONSTRAINTS': constraints}
+                'CONSTRAINTS': constraints
+            }
             if extref is not None:
                 self.linguistic_types[lingtype]['EXT_REF'] = extref
 
-    def add_linked_file(self, file_path, relpath=None, mimetype=None,
-                        time_origin=None, ex_from=None):
+    def add_linked_file(self,
+                        file_path,
+                        relpath=None,
+                        mimetype=None,
+                        time_origin=None,
+                        ex_from=None):
         """Add a linked file.
 
         :param str file_path: Path of the file.
@@ -282,9 +313,12 @@ class Eaf:
         if mimetype is None:
             mimetype = self.MIMES[file_path.split('.')[-1]]
         self.media_descriptors.append({
-            'MEDIA_URL': file_path, 'RELATIVE_MEDIA_URL': relpath,
-            'MIME_TYPE': mimetype, 'TIME_ORIGIN': time_origin,
-            'EXTRACTED_FROM': ex_from})
+            'MEDIA_URL': file_path,
+            'RELATIVE_MEDIA_URL': relpath,
+            'MIME_TYPE': mimetype,
+            'TIME_ORIGIN': time_origin,
+            'EXTRACTED_FROM': ex_from
+        })
 
     def add_locale(self, language_code, country_code=None, variant=None):
         """Add a locale.
@@ -303,8 +337,13 @@ class Eaf:
         """
         self.properties.append((key, value))
 
-    def add_ref_annotation(self, id_tier, tier2, time, value='',
-                           prev=None, svg=None):
+    def add_ref_annotation(self,
+                           id_tier,
+                           tier2,
+                           time,
+                           value='',
+                           prev=None,
+                           svg=None):
         """Add a reference annotation.
         .. note:: When a timepoint matches two annotations the new reference
         annotation will reference to the first annotation. To circumvent this
@@ -336,8 +375,12 @@ class Eaf:
         self.annotations[aid] = id_tier
         self.tiers[id_tier][1][aid] = (ann, value, prev, svg)
 
-    def add_secondary_linked_file(self, file_path, relpath=None, mimetype=None,
-                                  time_origin=None, assoc_with=None):
+    def add_secondary_linked_file(self,
+                                  file_path,
+                                  relpath=None,
+                                  mimetype=None,
+                                  time_origin=None,
+                                  assoc_with=None):
         """Add a secondary linked file.
 
         :param str file_path: Path of the file.
@@ -353,12 +396,22 @@ class Eaf:
         if mimetype is None:
             mimetype = self.MIMES[file_path.split('.')[-1]]
         self.linked_file_descriptors.append({
-            'LINK_URL': file_path, 'RELATIVE_LINK_URL': relpath,
-            'MIME_TYPE': mimetype, 'TIME_ORIGIN': time_origin,
-            'ASSOCIATED_WITH': assoc_with})
+            'LINK_URL': file_path,
+            'RELATIVE_LINK_URL': relpath,
+            'MIME_TYPE': mimetype,
+            'TIME_ORIGIN': time_origin,
+            'ASSOCIATED_WITH': assoc_with
+        })
 
-    def add_tier(self, tier_id, ling='default-lt', parent=None, locale=None,
-                 part=None, ann=None, language=None, tier_dict=None):
+    def add_tier(self,
+                 tier_id,
+                 ling='default-lt',
+                 parent=None,
+                 locale=None,
+                 part=None,
+                 ann=None,
+                 language=None,
+                 tier_dict=None):
         """Add a tier. When no linguistic type is given and the default
         linguistic type is unavailable then the assigned linguistic type will
         be the first in the list.
@@ -395,7 +448,8 @@ class Eaf:
                 'PARTICIPANT': part,
                 'DEFAULT_LOCALE': locale,
                 'LANG_REF': language,
-                'ANNOTATOR': ann}, len(self.tiers))
+                'ANNOTATOR': ann
+            }, len(self.tiers))
         else:
             self.tiers[tier_id] = ({}, {}, tier_dict, len(self.tiers))
 
@@ -417,7 +471,7 @@ class Eaf:
         """
         ts = ((a[0], a[1]) for t in self.tiers.values() for a in t[0].values())
         for a in {a for b in ts for a in b} ^ set(self.timeslots):
-            del(self.timeslots[a])
+            del (self.timeslots[a])
 
     def copy_tier(self, eaf_obj, tier_name):
         """Copies a tier to another :class:`pympi.Elan.Eaf` object.
@@ -428,13 +482,17 @@ class Eaf:
         """
         if tier_name in eaf_obj.get_tier_names():
             eaf_obj.remove_tier(tier_name)
-        eaf_obj.add_tier(tier_name,
-                         tier_dict=self.get_parameters_for_tier(tier_name))
+        eaf_obj.add_tier(
+            tier_name, tier_dict=self.get_parameters_for_tier(tier_name))
         for ann in self.get_annotation_data_for_tier(tier_name):
             eaf_obj.insert_annotation(tier_name, ann[0], ann[1], ann[2])
 
-    def create_gaps_and_overlaps_tier(self, tier1, tier2, tier_name=None,
-                                      maxlen=-1, fast=False):
+    def create_gaps_and_overlaps_tier(self,
+                                      tier1,
+                                      tier2,
+                                      tier_name=None,
+                                      maxlen=-1,
+                                      fast=False):
         """Create a tier with the gaps and overlaps of the annotations.
         For types see :func:`get_gaps_and_overlaps`
 
@@ -458,7 +516,7 @@ class Eaf:
             else self.get_gaps_and_overlaps(tier1, tier2, maxlen)
         for fto in ftogen:
             ftos.append(fto)
-            if fto[1]-fto[0] >= 1:
+            if fto[1] - fto[0] >= 1:
                 self.add_annotation(tier_name, fto[0], fto[1], fto[2])
         self.clean_time_slots()
         return ftos
@@ -475,12 +533,17 @@ class Eaf:
         for t in eaf_out.get_tier_names():
             for ab, ae, value in eaf_out.get_annotation_data_for_tier(t):
                 if ab > end or ae < start:
-                    eaf_out.remove_annotation(t, (start-end)//2, False)
+                    eaf_out.remove_annotation(t, (start - end) // 2, False)
         eaf_out.clean_time_slots()
         return eaf_out
 
-    def filter_annotations(self, tier, tier_name=None, filtin=None,
-                           filtex=None, regex=False, safe=False):
+    def filter_annotations(self,
+                           tier,
+                           tier_name=None,
+                           filtin=None,
+                           filtex=None,
+                           regex=False,
+                           safe=False):
         """Filter annotations in a tier using an exclusive and/or inclusive
         filter.
 
@@ -516,9 +579,10 @@ class Eaf:
         internally.
         """
         if not self.maxaid:
-            valid_anns = [int(''.join(filter(str.isdigit, a)))
-                          for a in self.timeslots]
-            self.maxaid = max(valid_anns + [1])+1
+            valid_anns = [
+                int(''.join(filter(str.isdigit, a))) for a in self.timeslots
+            ]
+            self.maxaid = max(valid_anns + [1]) + 1
         else:
             self.maxaid += 1
         return 'a{:d}'.format(self.maxaid)
@@ -533,9 +597,10 @@ class Eaf:
         if time and time < 0:
             raise ValueError('Time is negative...')
         if not self.maxts:
-            valid_ts = [int(''.join(filter(str.isdigit, a)))
-                        for a in self.timeslots]
-            self.maxts = max(valid_ts + [1])+1
+            valid_ts = [
+                int(''.join(filter(str.isdigit, a))) for a in self.timeslots
+            ]
+            self.maxts = max(valid_ts + [1]) + 1
         else:
             self.maxts += 1
         ts = 'ts{:d}'.format(self.maxts)
@@ -555,10 +620,10 @@ class Eaf:
         if self.tiers[id_tier][1]:
             return self.get_ref_annotation_at_time(id_tier, time)
         anns = self.tiers[id_tier][0]
-        return sorted([(self.timeslots[m[0]], self.timeslots[m[1]], m[2])
-                       for m in anns.values() if
-                       self.timeslots[m[0]] <= time and
-                       self.timeslots[m[1]] >= time])
+        return sorted(
+            [(self.timeslots[m[0]], self.timeslots[m[1]], m[2])
+             for m in anns.values()
+             if self.timeslots[m[0]] <= time and self.timeslots[m[1]] >= time])
 
     def get_annotation_data_after_time(self, id_tier, time):
         """Give the annotation before a given time. When the tier contains
@@ -573,7 +638,8 @@ class Eaf:
         if self.tiers[id_tier][1]:
             return self.get_ref_annotation_after_time(id_tier, time)
         befores = self.get_annotation_data_between_times(
-            id_tier, time, self.get_full_time_interval()[1])
+            id_tier, time,
+            self.get_full_time_interval()[1])
         if befores:
             return [min(befores, key=lambda x: x[0])]
         else:
@@ -637,8 +703,10 @@ class Eaf:
         :raises KeyError: If the tier is non existent.
         """
         self.tiers[id_tier]
-        return [m for m in self.tiers if 'PARENT_REF' in self.tiers[m][2] and
-                self.tiers[m][2]['PARENT_REF'] == id_tier]
+        return [
+            m for m in self.tiers if 'PARENT_REF' in self.tiers[m][2]
+            and self.tiers[m][2]['PARENT_REF'] == id_tier
+        ]
 
     def get_full_time_interval(self):
         """Give the full time interval of the file. Note that the real interval
@@ -702,24 +770,25 @@ class Eaf:
         def isin(x, lst):
             return False if\
                 len([i for i in lst if i[0] <= x and i[1] >= x]) == 0 else True
+
         minmax = (min(spkr1anns[0][0], spkr2anns[0][0]),
                   max(spkr1anns[-1][1], spkr2anns[-1][1]))
         last = (1, minmax[0])
         for ts in range(*minmax):
             in1, in2 = isin(ts, spkr1anns), isin(ts, spkr2anns)
-            if in1 and in2:      # Both speaking
+            if in1 and in2:  # Both speaking
                 if last[0] == 'B':
                     continue
                 ty = 'B'
-            elif in1:            # Only 1 speaking
+            elif in1:  # Only 1 speaking
                 if last[0] == '1':
                     continue
                 ty = '1'
-            elif in2:            # Only 2 speaking
+            elif in2:  # Only 2 speaking
                 if last[0] == '2':
                     continue
                 ty = '2'
-            else:                # None speaking
+            else:  # None speaking
                 if last[0] == 'N':
                     continue
                 ty = 'N'
@@ -732,23 +801,23 @@ class Eaf:
                         line1[i-1][0] != line1[i+1][0]:
                     t = ('G12', tier1, tier2) if line1[i-1][0] == '1' else\
                         ('G21', tier2, tier1)
-                    if maxlen == -1 or abs(line1[i][1]-line1[i][2]) < maxlen:
-                        yield (line1[i][1], line1[i][2]-1, '_'.join(t))
+                    if maxlen == -1 or abs(line1[i][1] - line1[i][2]) < maxlen:
+                        yield (line1[i][1], line1[i][2] - 1, '_'.join(t))
                 else:
                     t = ('P1', tier1) if line1[i-1][0] == '1' else\
                         ('P2', tier2)
-                    if maxlen == -1 or abs(line1[i][1]-line1[i][2]) < maxlen:
-                        yield (line1[i][1], line1[i][2]-1, '_'.join(t))
+                    if maxlen == -1 or abs(line1[i][1] - line1[i][2]) < maxlen:
+                        yield (line1[i][1], line1[i][2] - 1, '_'.join(t))
             elif line1[i][0] == 'B':
                 if i != 0 and i < len(line1) - 1 and\
                         line1[i-1][0] != line1[i+1][0]:
                     t = ('O12', tier1, tier2) if line1[i-1][0] == '1' else\
                         ('O21', tier2, tier1)
-                    yield (line1[i][1], line1[i][2]-1, '_'.join(t))
+                    yield (line1[i][1], line1[i][2] - 1, '_'.join(t))
                 else:
                     t = ('W12', tier1, tier2) if line1[i-1][0] == '1' else\
                         ('W21', tier2, tier1)
-                    yield (line1[i][1], line1[i][2]-1, '_'.join(t))
+                    yield (line1[i][1], line1[i][2] - 1, '_'.join(t))
 
     def get_gaps_and_overlaps2(self, tier1, tier2, maxlen=-1):
         """Faster variant of :func:`get_gaps_and_overlaps`. Faster in this case
@@ -761,13 +830,16 @@ class Eaf:
         :yields: Tuples of the form ``[(start, end, type)]``.
         :raises KeyError: If a tier is non existent.
         """
-        ad = sorted(((a, i+1) for i, t in enumerate([tier1, tier2]) for a in
-                     self.get_annotation_data_for_tier(t)), reverse=True)
+        ad = sorted(
+            ((a, i + 1) for i, t in enumerate([tier1, tier2])
+             for a in self.get_annotation_data_for_tier(t)),
+            reverse=True)
         if ad:
             last = (lambda x: (x[0][0], x[0][1], x[1]))(ad.pop())
 
             def thr(x, y):
-                return maxlen == -1 or abs(x-y) < maxlen
+                return maxlen == -1 or abs(x - y) < maxlen
+
             while ad:
                 (begin, end, _), current = ad.pop()
                 if last[2] == current and thr(begin, last[1]):
@@ -970,9 +1042,11 @@ class Eaf:
         :returns: List of tiernames.
         :raises KeyError: If a tier or linguistic type is non existent.
         """
-        return [t for t in self.tiers if
-                self.tiers[t][2]['LINGUISTIC_TYPE_REF'] == ling_type and
-                (parent is None or self.tiers[t][2]['PARENT_REF'] == parent)]
+        return [
+            t for t in self.tiers
+            if self.tiers[t][2]['LINGUISTIC_TYPE_REF'] == ling_type and (
+                parent is None or self.tiers[t][2]['PARENT_REF'] == parent)
+        ]
 
     def get_tier_names(self):
         """List all the tier names.
@@ -988,8 +1062,13 @@ class Eaf:
         """
         return self.add_annotation(id_tier, start, end, value, svg_ref)
 
-    def insert_ref_annotation(self, id_tier, tier2, time, value='',
-                              prev=None, svg=None):
+    def insert_ref_annotation(self,
+                              id_tier,
+                              tier2,
+                              time,
+                              value='',
+                              prev=None,
+                              svg=None):
         """.. deprecated:: 1.2
 
         Use :func:`add_ref_annotation` instead.
@@ -1014,8 +1093,8 @@ class Eaf:
         if tiernew is None:
             tiernew = u'{}_merged'.format('_'.join(tiers))
         self.add_tier(tiernew)
-        aa = [(sys.maxsize, sys.maxsize, None)] + sorted((
-            a for t in tiers for a in self.get_annotation_data_for_tier(t)),
+        aa = [(sys.maxsize, sys.maxsize, None)] + sorted(
+            (a for t in tiers for a in self.get_annotation_data_for_tier(t)),
             reverse=True)
         l = None
         while aa:
@@ -1039,9 +1118,9 @@ class Eaf:
         :raises KeyError: If the tier is non existent.
         """
         for aid in self.tiers[id_tier][0]:
-            del(self.annotations[aid])
+            del (self.annotations[aid])
         for aid in self.tiers[id_tier][1]:
-            del(self.annotations[aid])
+            del (self.annotations[aid])
 
         self.tiers[id_tier][0].clear()
         self.tiers[id_tier][1].clear()
@@ -1063,11 +1142,13 @@ class Eaf:
         if self.tiers[id_tier][1]:
             return self.remove_ref_annotation(id_tier, time, clean)
         removed = 0
-        for b in [a for a in self.tiers[id_tier][0].items() if
-                  self.timeslots[a[1][0]] <= time and
-                  self.timeslots[a[1][1]] >= time]:
-            del(self.tiers[id_tier][0][b[0]])
-            del(self.annotations[b[0]])
+        for b in [
+                a for a in self.tiers[id_tier][0].items()
+                if self.timeslots[a[1][0]] <= time
+                and self.timeslots[a[1][1]] >= time
+        ]:
+            del (self.tiers[id_tier][0][b[0]])
+            del (self.annotations[b[0]])
             removed += 1
         if clean:
             self.clean_time_slots()
@@ -1079,7 +1160,7 @@ class Eaf:
         :param str cv_id: Name of the controlled vocabulary.
         :throws KeyError: If there is no controlled vocabulary with that name.
         """
-        del(self.controlled_vocabularies[cv_id])
+        del (self.controlled_vocabularies[cv_id])
 
     def remove_cv_entry(self, cv_id, cve_id):
         """Remove a controlled vocabulary entry.
@@ -1089,7 +1170,7 @@ class Eaf:
         :throws KeyError: If there is no entry or controlled vocabulary with
             that name.
         """
-        del(self.controlled_vocabularies[cv_id][1][cve_id])
+        del (self.controlled_vocabularies[cv_id][1][cve_id])
 
     def remove_cv_description(self, cv_id, lang_ref):
         """Remove a controlled vocabulary description.
@@ -1098,10 +1179,10 @@ class Eaf:
         :paarm str cve_id: Name of the entry.
         :throws KeyError: If there is no controlled vocabulary with that name.
         """
-        for i, (l, d) in reversed(enumerate(
-                self.controlled_vocabularies[cv_id][1])):
+        for i, (l, d) in reversed(
+                enumerate(self.controlled_vocabularies[cv_id][1])):
             if l == lang_ref:
-                del(self.controlled_vocabularies[cv_id][1][i])
+                del (self.controlled_vocabularies[cv_id][1][i])
 
     def remove_external_ref(self, eid):
         """Remove an external reference.
@@ -1109,7 +1190,7 @@ class Eaf:
         :param str eid: Name of the external reference.
         :throws KeyError: If there is no external reference with that id.
         """
-        del(self.external_refs[eid])
+        del (self.external_refs[eid])
 
     def remove_language(self, lang_id):
         """Remove the language mathing the id.
@@ -1117,7 +1198,7 @@ class Eaf:
         :param str lang_id: Language id of the language.
         :throws KeyError: If there is no language matching the language id.
         """
-        del(self.languages[lang_id])
+        del (self.languages[lang_id])
 
     def remove_lexicon_ref(self, reid):
         """Remove a lexicon reference matching the id.
@@ -1125,7 +1206,7 @@ class Eaf:
         :param str reid: Lexicon reference id.
         :throws KeyError: If there is no lexicon reference matching the id.
         """
-        del(self.lexicon_refs[reid])
+        del (self.lexicon_refs[reid])
 
     def remove_license(self, name=None, url=None):
         """Remove all licenses matching both key and value.
@@ -1135,7 +1216,7 @@ class Eaf:
         """
         for k, v in self.licenses[:]:
             if (name is None or name == k) and (url is None or url == v):
-                del(self.licenses[self.licenses.index((k, v))])
+                del (self.licenses[self.licenses.index((k, v))])
 
     def remove_linguistic_type(self, ling_type):
         """Remove a linguistic type.
@@ -1143,10 +1224,14 @@ class Eaf:
         :param str ling_type: Name of the linguistic type.
         :raises KeyError: When the linguistic type doesn't exist.
         """
-        del(self.linguistic_types[ling_type])
+        del (self.linguistic_types[ling_type])
 
-    def remove_linked_files(self, file_path=None, relpath=None, mimetype=None,
-                            time_origin=None, ex_from=None):
+    def remove_linked_files(self,
+                            file_path=None,
+                            relpath=None,
+                            mimetype=None,
+                            time_origin=None,
+                            ex_from=None):
         """Remove all linked files that match all the criteria, criterias that
         are ``None`` are ignored.
 
@@ -1168,7 +1253,7 @@ class Eaf:
                 continue
             if ex_from is not None and attrib['EXTRACTED_FROM'] != ex_from:
                 continue
-            del(self.media_descriptors[self.media_descriptors.index(attrib)])
+            del (self.media_descriptors[self.media_descriptors.index(attrib)])
 
     def remove_locale(self, language_code):
         """Remove the locale matching the language code.
@@ -1176,7 +1261,7 @@ class Eaf:
         :param str language_code: Language code of the locale.
         :throws KeyError: If there is no locale matching the language code.
         """
-        del(self.locales[language_code])
+        del (self.locales[language_code])
 
     def remove_property(self, key=None, value=None):
         """Remove all properties matching both key and value.
@@ -1186,7 +1271,7 @@ class Eaf:
         """
         for k, v in self.properties[:]:
             if (key is None or key == k) and (value is None or value == v):
-                del(self.properties[self.properties.index((k, v))])
+                del (self.properties[self.properties.index((k, v))])
 
     def remove_ref_annotation(self, id_tier, time):
         """Remove a reference annotation.
@@ -1206,11 +1291,14 @@ class Eaf:
                 removed += 1
                 bucket.append(aid)
         for aid in bucket:
-            del(self.tiers[id_tier][1][aid])
+            del (self.tiers[id_tier][1][aid])
         return removed
 
-    def remove_secondary_linked_files(self, file_path=None, relpath=None,
-                                      mimetype=None, time_origin=None,
+    def remove_secondary_linked_files(self,
+                                      file_path=None,
+                                      relpath=None,
+                                      mimetype=None,
+                                      time_origin=None,
                                       assoc_with=None):
         """Remove all secondary linked files that match all the criteria,
         criterias that are ``None`` are ignored.
@@ -1234,7 +1322,7 @@ class Eaf:
             if assoc_with is not None and\
                     attrib['ASSOCIATED_WITH'] != assoc_with:
                 continue
-            del(self.linked_file_descriptors[
+            del (self.linked_file_descriptors[
                 self.linked_file_descriptors.index(attrib)])
 
     def remove_tier(self, id_tier, clean=True):
@@ -1244,7 +1332,7 @@ class Eaf:
         :param bool clean: Flag to also clean the timeslots.
         :raises KeyError: If tier is non existent.
         """
-        del(self.tiers[id_tier])
+        del (self.tiers[id_tier])
         if clean:
             self.clean_time_slots()
 
@@ -1286,9 +1374,9 @@ class Eaf:
         for name, tier in self.tiers.items():
             squashed = []
             for aid, (begin, end, value, _) in tier[0].items():
-                if self.timeslots[end]+time <= 0:
+                if self.timeslots[end] + time <= 0:
                     squashed.append((name, aid))
-                elif self.timeslots[begin]+time < 0:
+                elif self.timeslots[begin] + time < 0:
                     total_sq.append((name, self.timeslots[begin],
                                      self.timeslots[end], value))
                     self.timeslots[begin] = 0
@@ -1297,10 +1385,10 @@ class Eaf:
                     self.timeslots[end] += time
             for name, aid in squashed:
                 start, end, value, _ = self.tiers[name][0][aid]
-                del(self.tiers[name][0][aid])
-                del(self.annotations[aid])
-                total_re.append(
-                    (name, self.timeslots[start], self.timeslots[end], value))
+                del (self.tiers[name][0][aid])
+                del (self.annotations[aid])
+                total_re.append((name, self.timeslots[start],
+                                 self.timeslots[end], value))
         return total_sq, total_re
 
     def to_file(self, file_path, pretty=True):
@@ -1326,7 +1414,7 @@ class Eaf:
         """
         from pympi.Praat import TextGrid
         _, end = self.get_full_time_interval()
-        tgout = TextGrid(xmax=end/1000.0)
+        tgout = TextGrid(xmax=end / 1000.0)
         func = (lambda x, y: re.match(x, y)) if regex else lambda x, y: x == y
         for tier in self.tiers:
             if (filtin and not any(func(f, tier) for f in filtin)) or\
@@ -1335,7 +1423,8 @@ class Eaf:
             ctier = tgout.add_tier(tier)
             for intv in self.get_annotation_data_for_tier(tier):
                 try:
-                    ctier.add_interval(intv[0]/1000.0, intv[1]/1000.0, intv[2])
+                    ctier.add_interval(intv[0] / 1000.0, intv[1] / 1000.0,
+                                       intv[2])
                 except:
                     pass
         return tgout
@@ -1365,7 +1454,7 @@ def eaf_from_chat(file_path, codec='ascii', extension='wav'):
         'child', constraints='Symbolic_Association', timealignable=False)
     participantsdb = {}
     last_annotation = None
-    with open(file_path, 'r') as chatin:
+    with open(file_path, 'r', errors='ignore') as chatin:
         while True:
             line = chatin.readline().strip()
             if line == '@UTF8':  # Codec marker
@@ -1382,19 +1471,23 @@ def eaf_from_chat(file_path, codec='ascii', extension='wav'):
                 elif key == '@Participants':
                     for participant in value.split(','):
                         splits = participant.strip().split(' ')
-                        splits = list(map(lambda x: x.replace('_', ' '), splits))
+                        splits = list(
+                            map(lambda x: x.replace('_', ' '), splits))
                         if len(splits) == 2:
                             participantsdb[splits[0]] = (None, splits[1])
                         elif len(splits) == 3:
                             participantsdb[splits[0]] = (splits[1], splits[2])
                 elif key == '@ID':
-                    ids = list(map(lambda x: x.replace('_', ''), value.split('|')))
-                    eafob.add_tier(ids[2], part=participantsdb[ids[2]][0],
-                                   language=ids[0])
+                    ids = list(
+                        map(lambda x: x.replace('_', ''), value.split('|')))
+                    eafob.add_tier(
+                        ids[2],
+                        part=participantsdb[ids[2]][0],
+                        language=ids[0])
                 elif key == '@Media':
                     media = value.split(',')
-                    eafob.add_linked_file(
-                        'file://{}.{}'.format(media[0], extension))
+                    eafob.add_linked_file('file://{}.{}'.format(
+                        media[0], extension))
                 elif key == '@Transcriber:':
                     for tier in eafob.get_tier_names():
                         eafob.tiers[tier][2]['ANNOTATOR'] = value
@@ -1404,7 +1497,7 @@ def eaf_from_chat(file_path, codec='ascii', extension='wav'):
                     line += chatin.readline().strip()
                 for participant in participantsdb.keys():
                     if line.startswith('*{}:'.format(participant)):
-                        splits = ' '.join(line.split(':')[1:]).strip()
+                        splits = ''.join(line.split(':')[1:]).strip()
                         utt, time, _ = splits.split('\x15')
                         time = list(map(int, time.split('_')))
                         last_annotation = (participant, time[0], time[1], utt)
@@ -1414,9 +1507,9 @@ def eaf_from_chat(file_path, codec='ascii', extension='wav'):
                 name = '{}_{}'.format(last_annotation[0], splits[0][1:])
                 if name not in eafob.get_tier_names():
                     eafob.add_tier(name, 'child', last_annotation[0])
-                eafob.add_ref_annotation(
-                    name, last_annotation[0], sum(last_annotation[1:3])/2,
-                    ' '.join(splits[1:]).strip())
+                eafob.add_ref_annotation(name, last_annotation[0],
+                                         sum(last_annotation[1:3]) / 2,
+                                         ''.join(splits[1:]).strip())
     return eafob
 
 
@@ -1439,7 +1532,8 @@ def parse_eaf(file_path, eaf_obj):
         sys.stdout.write('Parsing unknown version of ELAN spec... '
                          'This could result in errors...\n')
     eaf_obj.adocument.update(tree_root.attrib)
-    del(eaf_obj.adocument['{http://www.w3.org/2001/XMLSchema-instance}noNamesp'
+    del (
+        eaf_obj.adocument['{http://www.w3.org/2001/XMLSchema-instance}noNamesp'
                           'aceSchemaLocation'])
     tier_number = 0
     for elem in tree_root:
@@ -1455,8 +1549,8 @@ def parse_eaf(file_path, eaf_obj):
                 elif elem1.tag == 'LINKED_FILE_DESCRIPTOR':
                     eaf_obj.linked_file_descriptors.append(elem1.attrib)
                 elif elem1.tag == 'PROPERTY':
-                    eaf_obj.properties.append(
-                        (elem1.attrib['NAME'], elem1.text))
+                    eaf_obj.properties.append((elem1.attrib['NAME'],
+                                               elem1.text))
         # Time order
         elif elem.tag == 'TIME_ORDER':
             for elem1 in elem:
@@ -1483,25 +1577,24 @@ def parse_eaf(file_path, eaf_obj):
                             annot_start = elem2.attrib['TIME_SLOT_REF1']
                             annot_end = elem2.attrib['TIME_SLOT_REF2']
                             svg_ref = elem2.attrib.get('SVG_REF', None)
-                            align[annot_id] = (annot_start, annot_end,
-                                               '' if not list(elem2)[0].text
-                                               else list(elem2)[0].text,
-                                               svg_ref)
+                            align[annot_id] = (annot_start, annot_end, ''
+                                               if not list(elem2)[0].text else
+                                               list(elem2)[0].text, svg_ref)
                             eaf_obj.annotations[annot_id] = tier_id
                         elif elem2.tag == 'REF_ANNOTATION':
                             annot_ref = elem2.attrib['ANNOTATION_REF']
-                            previous = elem2.attrib.get('PREVIOUS_ANNOTATION',
-                                                        None)
+                            previous = elem2.attrib.get(
+                                'PREVIOUS_ANNOTATION', None)
                             annot_id = elem2.attrib['ANNOTATION_ID']
                             annot_num = int(''.join(
                                 filter(str.isdigit, annot_id)))
                             if annot_num and annot_num > eaf_obj.maxaid:
                                 eaf_obj.maxaid = annot_num
                             svg_ref = elem2.attrib.get('SVG_REF', None)
-                            ref[annot_id] = (annot_ref,
-                                             '' if not list(elem2)[0].text else
-                                             list(elem2)[0].text,
-                                             previous, svg_ref)
+                            ref[annot_id] = (annot_ref, ''
+                                             if not list(elem2)[0].text else
+                                             list(elem2)[0].text, previous,
+                                             svg_ref)
                             eaf_obj.annotations[annot_id] = tier_id
             eaf_obj.tiers[tier_id] = (align, ref, elem.attrib, tier_number)
             tier_number += 1
@@ -1573,11 +1666,11 @@ def indent(el, level=0):
     i = '\n' + level * '\t'
     if len(el):
         if not el.text or not el.text.strip():
-            el.text = i+'\t'
+            el.text = i + '\t'
         if not el.tail or not el.tail.strip():
             el.tail = i
         for elem in el:
-            indent(elem, level+1)
+            indent(elem, level + 1)
         if not el.tail or not el.tail.strip():
             el.tail = i
     else:
@@ -1592,6 +1685,7 @@ def to_eaf(file_path, eaf_obj, pretty=True):
     :param pympi.Elan.Eaf eaf_obj: Object to write.
     :param bool pretty: Flag to set pretty printing.
     """
+
     def rm_none(x):
         try:  # Ugly hack to test if s is a string in py3 and py2
             basestring
@@ -1599,10 +1693,15 @@ def to_eaf(file_path, eaf_obj, pretty=True):
             def isstr(s):
                 return isinstance(s, basestring)
         except NameError:
+
             def isstr(s):
                 return isinstance(s, str)
-        return {k: v if isstr(v) else str(v) for k, v in x.items()
-                if v is not None}
+
+        return {
+            k: v if isstr(v) else str(v)
+            for k, v in x.items() if v is not None
+        }
+
     # Annotation Document
     ADOCUMENT = etree.Element('ANNOTATION_DOCUMENT', eaf_obj.adocument)
     # Licence
@@ -1623,61 +1722,103 @@ def to_eaf(file_path, eaf_obj, pretty=True):
     # Time order
     TIME_ORDER = etree.SubElement(ADOCUMENT, 'TIME_ORDER')
     for t in sorted(eaf_obj.timeslots.items(), key=lambda x: int(x[0][2:])):
-        etree.SubElement(TIME_ORDER, 'TIME_SLOT', rm_none(
-            {'TIME_SLOT_ID': t[0], 'TIME_VALUE': t[1]}))
+        etree.SubElement(TIME_ORDER, 'TIME_SLOT',
+                         rm_none({
+                             'TIME_SLOT_ID': t[0],
+                             'TIME_VALUE': t[1]
+                         }))
     # Tiers
     for t in sorted(eaf_obj.tiers.items(), key=lambda x: x[1][3]):
         tier = etree.SubElement(ADOCUMENT, 'TIER', rm_none(t[1][2]))
         for a in t[1][0].items():
             ann = etree.SubElement(tier, 'ANNOTATION')
-            alan = etree.SubElement(ann, 'ALIGNABLE_ANNOTATION', rm_none(
-                {'ANNOTATION_ID': a[0], 'TIME_SLOT_REF1': a[1][0],
-                 'TIME_SLOT_REF2': a[1][1], 'SVG_REF': a[1][3]}))
+            alan = etree.SubElement(
+                ann, 'ALIGNABLE_ANNOTATION',
+                rm_none({
+                    'ANNOTATION_ID': a[0],
+                    'TIME_SLOT_REF1': a[1][0],
+                    'TIME_SLOT_REF2': a[1][1],
+                    'SVG_REF': a[1][3]
+                }))
             etree.SubElement(alan, 'ANNOTATION_VALUE').text = a[1][2]
         for a in t[1][1].items():
             ann = etree.SubElement(tier, 'ANNOTATION')
-            rean = etree.SubElement(ann, 'REF_ANNOTATION', rm_none(
-                {'ANNOTATION_ID': a[0], 'ANNOTATION_REF': a[1][0],
-                 'PREVIOUS_ANNOTATION': a[1][2], 'SVG_REF': a[1][3]}))
+            rean = etree.SubElement(
+                ann, 'REF_ANNOTATION',
+                rm_none({
+                    'ANNOTATION_ID': a[0],
+                    'ANNOTATION_REF': a[1][0],
+                    'PREVIOUS_ANNOTATION': a[1][2],
+                    'SVG_REF': a[1][3]
+                }))
             etree.SubElement(rean, 'ANNOTATION_VALUE').text = a[1][1]
     # Linguistic types
     for l in eaf_obj.linguistic_types.values():
         etree.SubElement(ADOCUMENT, 'LINGUISTIC_TYPE', rm_none(l))
     # Locales
     for lc, (cc, vr) in eaf_obj.locales.items():
-        etree.SubElement(ADOCUMENT, 'LOCALE', rm_none(
-            {'LANGUAGE_CODE': lc, 'COUNTRY_CODE': cc, 'VARIANT': vr}))
+        etree.SubElement(
+            ADOCUMENT, 'LOCALE',
+            rm_none({
+                'LANGUAGE_CODE': lc,
+                'COUNTRY_CODE': cc,
+                'VARIANT': vr
+            }))
     # Languages
     for lid, (ldef, label) in eaf_obj.languages.items():
-        etree.SubElement(ADOCUMENT, 'LANGUAGE', rm_none(
-            {'LANG_ID': lid, 'LANG_DEF': ldef, 'LANG_LABEL': label}))
+        etree.SubElement(
+            ADOCUMENT, 'LANGUAGE',
+            rm_none({
+                'LANG_ID': lid,
+                'LANG_DEF': ldef,
+                'LANG_LABEL': label
+            }))
     # Constraints
     for l in eaf_obj.constraints.items():
-        etree.SubElement(ADOCUMENT, 'CONSTRAINT', rm_none(
-            {'STEREOTYPE': l[0], 'DESCRIPTION': l[1]}))
+        etree.SubElement(ADOCUMENT, 'CONSTRAINT',
+                         rm_none({
+                             'STEREOTYPE': l[0],
+                             'DESCRIPTION': l[1]
+                         }))
     # Controlled vocabularies
     for cvid, (descriptions, cv_entries, ext_ref) in\
             eaf_obj.controlled_vocabularies.items():
         cv = etree.SubElement(ADOCUMENT, 'CONTROLLED_VOCABULARY',
-                              rm_none({'CV_ID': cvid, 'EXT_REF': ext_ref}))
+                              rm_none({
+                                  'CV_ID': cvid,
+                                  'EXT_REF': ext_ref
+                              }))
         for lang_ref, description in descriptions:
             des = etree.SubElement(cv, 'DESCRIPTION', {'LANG_REF': lang_ref})
             if description:
                 des.text = description
         for cveid, (values, ext_ref) in cv_entries.items():
-            cem = etree.SubElement(cv, 'CV_ENTRY_ML', rm_none({
-                'CVE_ID': cveid, 'EXT_REF': ext_ref}))
+            cem = etree.SubElement(
+                cv, 'CV_ENTRY_ML',
+                rm_none({
+                    'CVE_ID': cveid,
+                    'EXT_REF': ext_ref
+                }))
             for value, lang_ref, description in values:
-                val = etree.SubElement(cem, 'CVE_VALUE', rm_none({
-                    'LANG_REF': lang_ref, 'DESCRIPTION': description}))
+                val = etree.SubElement(
+                    cem, 'CVE_VALUE',
+                    rm_none({
+                        'LANG_REF': lang_ref,
+                        'DESCRIPTION': description
+                    }))
                 val.text = value
     # Lexicon refs
     for l in eaf_obj.lexicon_refs.values():
         etree.SubElement(ADOCUMENT, 'LEXICON_REF', rm_none(l))
     # Exteral refs
     for eid, (etype, value) in eaf_obj.external_refs.items():
-        etree.SubElement(ADOCUMENT, 'EXTERNAL_REF', rm_none(
-            {'EXT_REF_ID': eid, 'TYPE': etype, 'VALUE': value}))
+        etree.SubElement(
+            ADOCUMENT, 'EXTERNAL_REF',
+            rm_none({
+                'EXT_REF_ID': eid,
+                'TYPE': etype,
+                'VALUE': value
+            }))
 
     if pretty:
         indent(ADOCUMENT)
